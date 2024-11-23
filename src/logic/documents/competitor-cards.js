@@ -4,6 +4,7 @@ import {
   activityById,
   hasDistributedAttempts,
   parseActivityCode,
+  roomForActivity,
 } from '../activities';
 import { acceptedPeople } from '../competitors';
 import { getExtensionData } from '../wcif-extensions';
@@ -111,7 +112,8 @@ const competitorCard = (wcif, person) => {
         const { eventId, roundNumber, groupNumber } = parseActivityCode(
           activity.activityCode
         );
-        return { assignmentCode, eventId, groupNumber, roundNumber };
+        const room = roomForActivity(wcif, activityId);
+        return { assignmentCode, eventId, groupNumber, roundNumber, room };
       })
       .filter(({ roundNumber }) => roundNumber === 1),
     ({ groupNumber }) => groupNumber
@@ -122,7 +124,7 @@ const competitorCard = (wcif, person) => {
         task =>
           task.eventId === eventId && task.assignmentCode === assignmentCode
       )
-      .map(task => task.groupNumber)
+      .map(task => task.room.name[0] + task.groupNumber)
       .join(', '),
     alignment: 'center',
   });

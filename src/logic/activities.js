@@ -116,6 +116,21 @@ const allActivities = wcif => {
   return [...activities, ...flatMap(activities, allChildActivities)];
 };
 
+export const roomForActivity = (wcif, activityId) => {
+  for (const room of rooms(wcif)) {
+    for (const activity of room.activities) {
+      if (activity.id === activityId) {
+        return room;
+      }
+      for (const child of activity.childActivities) {
+        if (child.id === activityId) {
+          return room;
+        }
+      }
+    }
+  }
+};
+
 export const maxActivityId = wcif =>
   Math.max(...allActivities(wcif).map(activity => activity.id));
 
@@ -240,7 +255,9 @@ export const roundActivities = (wcif, roundId) =>
 
 export const groupActivitiesByRound = (wcif, roundId) =>
   flatMap(roundActivities(wcif, roundId), activity =>
-    hasDistributedAttempts(roundId) ? [activity] : activity.childActivities
+    parseActivityCode(roundId).eventId == '333fm'
+      ? [activity]
+      : activity.childActivities
   );
 
 export const roomsWithTimezoneAndGroups = (wcif, roundId) =>
